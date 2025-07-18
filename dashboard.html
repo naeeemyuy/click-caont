@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Click Dashboard</title>
+</head>
+<body>
+  <h2>Total Clicks: <span id="totalClicks">0</span></h2>
+  <ul id="deviceStats"></ul>
+
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-database-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAvib1tlDUQUDMatJyPSJE96SQI891amMs",
+      authDomain: "my-app-f068f.firebaseapp.com",
+      databaseURL: "https://my-app-f068f-default-rtdb.firebaseio.com",
+      projectId: "my-app-f068f",
+      storageBucket: "my-app-f068f.firebasestorage.app",
+      messagingSenderId: "1080624095623",
+      appId: "1:1080624095623:android:993fd028a8190eb2d6f322"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const totalClicksElem = document.getElementById("totalClicks");
+    const deviceStatsElem = document.getElementById("deviceStats");
+
+    db.ref("clicks").on("value", (snapshot) => {
+      const data = snapshot.val();
+      const counts = {};
+      let total = 0;
+
+      for (let key in data) {
+        const device = data[key].device || "Unknown";
+        counts[device] = (counts[device] || 0) + 1;
+        total++;
+      }
+
+      totalClicksElem.innerText = total;
+      deviceStatsElem.innerHTML = "";
+
+      for (let device in counts) {
+        const li = document.createElement("li");
+        li.innerText = `${device}: ${counts[device]} clicks`;
+        deviceStatsElem.appendChild(li);
+      }
+    });
+  </script>
+</body>
+</html>
